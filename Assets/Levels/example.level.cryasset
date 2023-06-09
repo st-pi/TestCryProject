@@ -1,4 +1,4 @@
-<AssetMetadata version="0" type="Level" guid="984fcd77-e594-2b34-fbf5-414a47e0d684" source="">
+<AssetMetadata version="0" type="Level" guid="984fcd77-e594-2b34-fbf5-414a47e0d684" source="" timestamp="1686338376">
  <Files>
   <File path="example/example.level"/>
  </Files>
@@ -18,17 +18,11 @@
   <Path>%engine%/engineassets/materials/material_default.mtl</Path>
   <Path>%engine%/engineassets/materials/material_terrain_default.mtl</Path>
   <Path>%engine%/engineassets/materials/water/wateroceanbottom.mtl</Path>
-  <Path>%engine%/engineassets/objects/editorprimitive.mtl</Path>
   <Path>%engine%/engineassets/objects/primitive_cube.cgf</Path>
   <Path>%engine%/engineassets/objects/primitive_sphere.cgf</Path>
   <Path>%engine%/engineassets/texturemsg/defaultnouvs.dds</Path>
   <Path>%engine%/engineassets/texturemsg/defaultsolids.mtl</Path>
-  <Path>%engine%/engineassets/textures/defaults/16_12.dds</Path>
-  <Path>%engine%/engineassets/textures/defaults/16_34.dds</Path>
-  <Path>%engine%/engineassets/textures/defaults/16_5.dds</Path>
-  <Path>%engine%/engineassets/textures/defaults/16_grey.dds</Path>
-  <Path>%engine%/engineassets/textures/perlinnoisederivatives.dds</Path>
-  <Path>%engine%/engineassets/textures/water_droplets.dds</Path>
+  <Path>%engine%/engineassets/textures/skys/night/half_moon.dds</Path>
   <Path>%engine%/engineassets/textures/white.dds</Path>
   <Path>animations/mannequin/adb/firstpersoncontrollerdefinition.xml</Path>
   <Path>animations/mannequin/adb/playerfragmentids.xml</Path>
@@ -86,16 +80,11 @@
   <Path>animations/motusanims/turns/walkturn_rgt_3p.caf</Path>
   <Path>animations/motusanims/walk_bck_3p.caf</Path>
   <Path>animations/motusanims/walk_fwd_3p.caf</Path>
-  <Path>e:/wsp/ce/main_stabilisation/code/gametemplates/cpp/firstpersonshooter/assets/levels/example/filelist.xml</Path>
-  <Path>engineassets/materials/sky/sky.mtl</Path>
+  <Path>editor/resourcecache/objects/characters/samplecharacter/mcg_ddna.dds</Path>
+  <Path>editor/resourcecache/objects/characters/samplecharacter/mcg_diff.dds</Path>
+  <Path>editor/resourcecache/objects/characters/samplecharacter/mcg_spec.dds</Path>
   <Path>engineassets/materials/water/ocean_default.mtl</Path>
-  <Path>engineassets/texturemsg/defaultnouvs.dds</Path>
-  <Path>engineassets/textures/grey.dds</Path>
-  <Path>engineassets/textures/skys/night/half_moon.dds</Path>
-  <Path>engineassets/textures/white.dds</Path>
-  <Path>libs/environmentpresets/example.xml</Path>
-  <Path>materials/bullet.mtl</Path>
-  <Path>materials/terrain.mtl</Path>
+  <Path usageCount="1">libs/environmentpresets/example.env</Path>
   <Path>objects/characters/samplecharacter/firstperson.cdf</Path>
   <Path>objects/characters/samplecharacter/mcg_ddna.dds</Path>
   <Path>objects/characters/samplecharacter/mcg_diff.dds</Path>
@@ -103,11 +92,8 @@
   <Path>objects/characters/samplecharacter/motusbodyheadless.skin</Path>
   <Path>objects/characters/samplecharacter/motusbodymat.mtl</Path>
   <Path>objects/characters/samplecharacter/skelproxy.chr</Path>
-  <Path>objects/default/editorprimitive.mtl</Path>
-  <Path>objects/default/primitive_sphere.cgf</Path>
   <Path>objects/weapons/sampleweapon/defaultweapon.cgf</Path>
   <Path>objects/weapons/sampleweapon/defaultweapon.mtl</Path>
-  <Path>scripts/ai/factions.xml</Path>
   <Path>textures/cubemaps/example/environmentprobe1_cm.dds</Path>
   <Path>textures/cubemaps/example/environmentprobe1_cm_diff.dds</Path>
  </Dependencies>

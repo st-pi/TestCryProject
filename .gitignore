@@ -33,4 +33,7 @@
 
 solutions/*
 logbackups/*
+bin/*
 user/*
+bin
+Editor/ResourceCache/*
