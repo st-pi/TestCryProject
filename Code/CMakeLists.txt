@@ -27,9 +27,11 @@ add_sources("Components_uber.cpp"
     SOURCE_GROUP "Components"
 		"Components/Player.cpp"
 		"Components/SpawnPoint.cpp"
+        "Components/Weapon.cpp"
 		"Components/Bullet.h"
 		"Components/Player.h"
 		"Components/SpawnPoint.h"
+        "Components/Weapon.h"
 )
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CVarOverrides.h")

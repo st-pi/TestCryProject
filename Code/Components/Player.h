@@ -1,16 +1,20 @@
 // Copyright 2017-2019 Crytek GmbH / Crytek Group. All rights reserved.
 #pragma once
 
-#include <DefaultComponents/Cameras/CameraComponent.h>
-#include <DefaultComponents/Input/InputComponent.h>
-#include <DefaultComponents/Physics/CharacterControllerComponent.h>
-#include <DefaultComponents/Geometry/AdvancedAnimationComponent.h>
-
 ////////////////////////////////////////////////////////
 // Represents a player participating in gameplay
 ////////////////////////////////////////////////////////
+
+namespace Cry::DefaultComponents
+{
+	class CCameraComponent;
+	class CInputComponent;
+	class CCharacterControllerComponent;
+	class CAdvancedAnimationComponent;
+}
 namespace Game
 {
+	class CWeaponComponent;
 	class CPlayerComponent final : public IEntityComponent
 	{
 	public:
@@ -47,6 +51,7 @@ namespace Game
 		Cry::DefaultComponents::CInputComponent* m_pInputComponent = nullptr;
 		Cry::DefaultComponents::CCharacterControllerComponent* m_pCharacterControllerComponnet = nullptr;
 		Cry::DefaultComponents::CAdvancedAnimationComponent* m_pAdvancedAnimationComponent = nullptr;
+		CWeaponComponent* m_pWeaponComponent = nullptr;
 
 		Quat m_lookOrientation;
 

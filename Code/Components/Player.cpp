@@ -1,7 +1,13 @@
 // Copyright 2017-2020 Crytek GmbH / Crytek Group. All rights reserved.
 #include "StdAfx.h"
 #include "Player.h"
-#include "GamePlugin.h"
+
+#include <DefaultComponents/Cameras/CameraComponent.h>
+#include <DefaultComponents/Input/InputComponent.h>
+#include <DefaultComponents/Physics/CharacterControllerComponent.h>
+#include <DefaultComponents/Geometry/AdvancedAnimationComponent.h>
+#include "Weapon.h"
+
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CryCore/StaticInstanceList.h>
 #include <CrySchematyc/Env/IEnvRegistrar.h>
@@ -24,6 +30,7 @@ namespace Game
 		m_pInputComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CInputComponent>();
 		m_pCharacterControllerComponnet = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CCharacterControllerComponent>();
 		m_pAdvancedAnimationComponent = m_pEntity->GetOrCreateComponent<Cry::DefaultComponents::CAdvancedAnimationComponent>();
+		m_pWeaponComponent = m_pEntity->GetOrCreateComponent<CWeaponComponent>();
 	}
 
 	Cry::Entity::EventFlags CPlayerComponent::GetEventMask() const
@@ -87,6 +94,21 @@ namespace Game
 
 		m_pInputComponent->RegisterAction("player", "jump", [this](int activationMode, float value) {m_isJumpPressed = activationMode == eAAM_OnPress; });
 		m_pInputComponent->BindAction("player", "jump", eAID_KeyboardMouse, eKI_Space);
+
+		m_pInputComponent->RegisterAction("player", "shoot", [this](int activationMode, float value) 
+			{
+				if (activationMode == eAAM_OnPress)
+				{
+					if (auto pCharacter = m_pAdvancedAnimationComponent->GetCharacter())
+					{
+						if (auto pBarrelAttachment = pCharacter->GetIAttachmentManager()->GetInterfaceByName("barrel_out"))
+						{
+							m_pWeaponComponent->Shoot(pBarrelAttachment->GetAttWorldAbsolute());
+						}
+					}
+				}
+			});
+		m_pInputComponent->BindAction("player", "shoot", eAID_KeyboardMouse, EKeyId::eKI_Mouse1);
 	}
 
 	void CPlayerComponent::UpdatePlayerMovement()
