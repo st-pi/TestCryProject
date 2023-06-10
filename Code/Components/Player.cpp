@@ -81,13 +81,27 @@ namespace Game
 
 		m_pInputComponent->RegisterAction("player", "pitch", [this](int activationMode, float value) {m_mouseDeltaRotation.x = -value; });
 		m_pInputComponent->BindAction("player", "pitch", eAID_KeyboardMouse, eKI_MouseX);
+
+		m_pInputComponent->RegisterAction("player", "walk", [this](int activationMode, float value) {m_isWalkPressed = (activationMode == eAAM_OnPress || activationMode == eAAM_OnHold); });
+		m_pInputComponent->BindAction("player", "walk", eAID_KeyboardMouse, eKI_LShift);
+
+		m_pInputComponent->RegisterAction("player", "jump", [this](int activationMode, float value) {m_isJumpPressed = activationMode == eAAM_OnPress; });
+		m_pInputComponent->BindAction("player", "jump", eAID_KeyboardMouse, eKI_Space);
 	}
 
 	void CPlayerComponent::UpdatePlayerMovement()
 	{
 		Vec3 velocity = Vec3(m_movementDelta.x, m_movementDelta.y, 0.0f);
 		velocity.Normalize();
-		m_pCharacterControllerComponnet->SetVelocity(m_pEntity->GetWorldRotation() * velocity * m_movementSpeed);
+		velocity *= (m_isWalkPressed ? m_walkSpeed : m_movementSpeed);
+
+		if (m_pCharacterControllerComponnet->IsOnGround() && m_isJumpPressed)
+		{
+			Vec3 jumpVelocity(0, 0, m_JumpHeight);
+			m_pCharacterControllerComponnet->ChangeVelocity(jumpVelocity, Cry::DefaultComponents::CCharacterControllerComponent::EChangeVelocityMode::Add);
+		}
+
+		m_pCharacterControllerComponnet->SetVelocity(m_pEntity->GetWorldRotation() * velocity);
 	}
 
 	void CPlayerComponent::UpdateCameraRotation()
