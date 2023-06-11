@@ -1,12 +1,12 @@
 // Copyright 2017-2020 Crytek GmbH / Crytek Group. All rights reserved.
 #include "StdAfx.h"
 #include "Player.h"
+#include "Weapon.h"
 
 #include <DefaultComponents/Cameras/CameraComponent.h>
 #include <DefaultComponents/Input/InputComponent.h>
 #include <DefaultComponents/Physics/CharacterControllerComponent.h>
 #include <DefaultComponents/Geometry/AdvancedAnimationComponent.h>
-#include "Weapon.h"
 
 #include <CrySchematyc/Env/Elements/EnvComponent.h>
 #include <CryCore/StaticInstanceList.h>
@@ -56,6 +56,7 @@ namespace Game
 		}
 		case Cry::Entity::EEvent::Reset:
 		{
+			m_inputFlags.Clear();
 			m_movementDelta = ZERO;
 			m_mouseDeltaRotation = ZERO;
 			m_lookOrientation = IDENTITY;
@@ -71,6 +72,14 @@ namespace Game
 
 	void CPlayerComponent::InitializeInput()
 	{
+		/* Mouse input*/
+		m_pInputComponent->RegisterAction("player", "yaw", [this](int activationMode, float value) {m_mouseDeltaRotation.y = -value; });
+		m_pInputComponent->BindAction("player", "yaw", eAID_KeyboardMouse, eKI_MouseY);
+
+		m_pInputComponent->RegisterAction("player", "pitch", [this](int activationMode, float value) {m_mouseDeltaRotation.x = -value; });
+		m_pInputComponent->BindAction("player", "pitch", eAID_KeyboardMouse, eKI_MouseX);
+
+		/* Keyboard input*/
 		m_pInputComponent->RegisterAction("player", "moveforward", [this](int activationMode, float value) {m_movementDelta.y = value; });
 		m_pInputComponent->BindAction("player", "moveforward", eAID_KeyboardMouse, eKI_W);
 
@@ -83,16 +92,10 @@ namespace Game
 		m_pInputComponent->RegisterAction("player", "moveleft", [this](int activationMode, float value) {m_movementDelta.x = -value; });
 		m_pInputComponent->BindAction("player", "moveleft", eAID_KeyboardMouse, eKI_A);
 
-		m_pInputComponent->RegisterAction("player", "yaw", [this](int activationMode, float value) {m_mouseDeltaRotation.y = -value; });
-		m_pInputComponent->BindAction("player", "yaw", eAID_KeyboardMouse, eKI_MouseY);
-
-		m_pInputComponent->RegisterAction("player", "pitch", [this](int activationMode, float value) {m_mouseDeltaRotation.x = -value; });
-		m_pInputComponent->BindAction("player", "pitch", eAID_KeyboardMouse, eKI_MouseX);
-
-		m_pInputComponent->RegisterAction("player", "walk", [this](int activationMode, float value) {m_isWalkPressed = (activationMode == eAAM_OnPress || activationMode == eAAM_OnHold); });
+		m_pInputComponent->RegisterAction("player", "walk", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::Walk, EInputFlagType::Hold, activationMode); });
 		m_pInputComponent->BindAction("player", "walk", eAID_KeyboardMouse, eKI_LShift);
 
-		m_pInputComponent->RegisterAction("player", "jump", [this](int activationMode, float value) {m_isJumpPressed = activationMode == eAAM_OnPress; });
+		m_pInputComponent->RegisterAction("player", "jump", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::Jump, EInputFlagType::Tap, activationMode); });
 		m_pInputComponent->BindAction("player", "jump", eAID_KeyboardMouse, eKI_Space);
 
 		m_pInputComponent->RegisterAction("player", "shoot", [this](int activationMode, float value) 
@@ -115,9 +118,9 @@ namespace Game
 	{
 		Vec3 velocity = Vec3(m_movementDelta.x, m_movementDelta.y, 0.0f);
 		velocity.Normalize();
-		velocity *= (m_isWalkPressed ? m_walkSpeed : m_movementSpeed);
+		velocity *= (IsInputFlagActive(EInputFlag::Walk) ? m_walkSpeed : m_movementSpeed);
 
-		if (m_pCharacterControllerComponnet->IsOnGround() && m_isJumpPressed)
+		if (m_pCharacterControllerComponnet->IsOnGround() && IsInputFlagActive(EInputFlag::Jump))
 		{
 			Vec3 jumpVelocity(0, 0, m_JumpHeight);
 			m_pCharacterControllerComponnet->ChangeVelocity(jumpVelocity, Cry::DefaultComponents::CCharacterControllerComponent::EChangeVelocityMode::Add);
@@ -147,6 +150,49 @@ namespace Game
 		Matrix33 camRotation = CCamera::CreateOrientationYPR(pitchAngle);
 		finalCamMatrix.SetRotation33(camRotation);
 		m_pCameraComponent->SetTransformMatrix(finalCamMatrix);
+	}
+
+	void CPlayerComponent::HandleInputFlagChange(const EInputFlag inputFlags, const EInputFlagType inputType, int activationMode)
+	{
+		switch (inputType)
+		{
+		case EInputFlagType::Hold:
+		{
+			if (activationMode == eAAM_OnRelease)
+			{
+				m_inputFlags.Remove(inputFlags);
+			}
+			else
+			{
+				m_inputFlags.Add(inputFlags);
+			}
+			break;
+		}
+		case EInputFlagType::Toggle:
+		{
+			if (activationMode == eAAM_OnRelease)
+			{
+				m_inputFlags ^= inputFlags;
+			}
+			break;
+		}
+		case EInputFlagType::Tap:
+		{
+			if (activationMode == eAAM_OnPress)
+			{
+				m_inputFlags.Add(inputFlags);
+			}
+			else
+			{
+				m_inputFlags.Remove(inputFlags);
+			}
+			break;
+		}
+		}
+	}
+	bool CPlayerComponent::IsInputFlagActive(const EInputFlag inputFlag) const
+	{
+		return m_inputFlags.Check(inputFlag);
 	}
 }
 

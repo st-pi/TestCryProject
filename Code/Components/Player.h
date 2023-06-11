@@ -18,6 +18,20 @@ namespace Game
 	class CPlayerComponent final : public IEntityComponent
 	{
 	public:
+		enum class EInputFlagType
+		{
+			Hold = 0,
+			Toggle,
+			Tap
+		};
+
+		enum class EInputFlag : uint8
+		{
+			Walk = 1 << 0,
+			Jump = 1 << 1
+		};
+
+
 		CPlayerComponent() = default;
 		virtual ~CPlayerComponent() = default;
 
@@ -45,6 +59,8 @@ namespace Game
 		void InitializeInput();
 		void UpdatePlayerMovement();
 		void UpdateCameraRotation();
+		void HandleInputFlagChange(const EInputFlag inputFlags, const EInputFlagType inputType, int activationMode);
+		bool IsInputFlagActive(const EInputFlag inputFlag) const;
 
 	private:
 		Cry::DefaultComponents::CCameraComponent* m_pCameraComponent = nullptr;
@@ -68,8 +84,7 @@ namespace Game
 		float m_rotationLimitsMinPitch = 0.0f;
 		float m_rotationLimitsMaxPitch = 0.0f;
 
-		bool m_isWalkPressed = false;
-		bool m_isJumpPressed = false;
+		CEnumFlags<EInputFlag> m_inputFlags;
 	};
 }
 
