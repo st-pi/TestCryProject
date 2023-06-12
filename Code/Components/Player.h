@@ -27,8 +27,12 @@ namespace Game
 
 		enum class EInputFlag : uint8
 		{
-			Walk = 1 << 0,
-			Jump = 1 << 1
+			MoveForward = 1 << 0,
+			MoveBack = 1 << 1,
+			MoveRight = 1 << 2,
+			MoveLeft = 1 << 3,
+			Walk = 1 << 4,
+			Jump = 1 << 5
 		};
 
 
@@ -57,7 +61,7 @@ namespace Game
 
 	private:
 		void InitializeInput();
-		void UpdatePlayerMovement();
+		void UpdatePlayerMovement(float deltaTime);
 		void UpdateCameraRotation();
 		void HandleInputFlagChange(const EInputFlag inputFlags, const EInputFlagType inputType, int activationMode);
 		bool IsInputFlagActive(const EInputFlag inputFlag) const;
@@ -73,7 +77,6 @@ namespace Game
 
 		Vec3 m_cameraDefaultPos;
 
-		Vec2 m_movementDelta;
 		Vec2 m_mouseDeltaRotation;
 
 		float m_walkSpeed = 0.0f;

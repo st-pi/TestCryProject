@@ -49,7 +49,8 @@ namespace Game
 		}
 		case Cry::Entity::EEvent::Update:
 		{
-			UpdatePlayerMovement();
+			float dt = event.fParam[0];
+			UpdatePlayerMovement(dt);
 			UpdateCameraRotation();
 
 			break;
@@ -57,7 +58,6 @@ namespace Game
 		case Cry::Entity::EEvent::Reset:
 		{
 			m_inputFlags.Clear();
-			m_movementDelta = ZERO;
 			m_mouseDeltaRotation = ZERO;
 			m_lookOrientation = IDENTITY;
 
@@ -80,16 +80,16 @@ namespace Game
 		m_pInputComponent->BindAction("player", "pitch", eAID_KeyboardMouse, eKI_MouseX);
 
 		/* Keyboard input*/
-		m_pInputComponent->RegisterAction("player", "moveforward", [this](int activationMode, float value) {m_movementDelta.y = value; });
+		m_pInputComponent->RegisterAction("player", "moveforward", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::MoveForward, EInputFlagType::Hold, activationMode); });
 		m_pInputComponent->BindAction("player", "moveforward", eAID_KeyboardMouse, eKI_W);
 
-		m_pInputComponent->RegisterAction("player", "moveback", [this](int activationMode, float value) {m_movementDelta.y = -value; });
+		m_pInputComponent->RegisterAction("player", "moveback", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::MoveBack, EInputFlagType::Hold, activationMode); });
 		m_pInputComponent->BindAction("player", "moveback", eAID_KeyboardMouse, eKI_S);
 
-		m_pInputComponent->RegisterAction("player", "moveright", [this](int activationMode, float value) {m_movementDelta.x = value; });
+		m_pInputComponent->RegisterAction("player", "moveright", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::MoveRight, EInputFlagType::Hold, activationMode); });
 		m_pInputComponent->BindAction("player", "moveright", eAID_KeyboardMouse, eKI_D);
 
-		m_pInputComponent->RegisterAction("player", "moveleft", [this](int activationMode, float value) {m_movementDelta.x = -value; });
+		m_pInputComponent->RegisterAction("player", "moveleft", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::MoveLeft, EInputFlagType::Hold, activationMode); });
 		m_pInputComponent->BindAction("player", "moveleft", eAID_KeyboardMouse, eKI_A);
 
 		m_pInputComponent->RegisterAction("player", "walk", [this](int activationMode, float value) {HandleInputFlagChange(EInputFlag::Walk, EInputFlagType::Hold, activationMode); });
@@ -114,19 +114,37 @@ namespace Game
 		m_pInputComponent->BindAction("player", "shoot", eAID_KeyboardMouse, EKeyId::eKI_Mouse1);
 	}
 
-	void CPlayerComponent::UpdatePlayerMovement()
+	void CPlayerComponent::UpdatePlayerMovement(float deltaTime)
 	{
-		Vec3 velocity = Vec3(m_movementDelta.x, m_movementDelta.y, 0.0f);
-		velocity.Normalize();
-		velocity *= (IsInputFlagActive(EInputFlag::Walk) ? m_walkSpeed : m_movementSpeed);
-
 		if (m_pCharacterControllerComponnet->IsOnGround() && IsInputFlagActive(EInputFlag::Jump))
 		{
 			Vec3 jumpVelocity(0, 0, m_JumpHeight);
 			m_pCharacterControllerComponnet->ChangeVelocity(jumpVelocity, Cry::DefaultComponents::CCharacterControllerComponent::EChangeVelocityMode::Add);
 		}
 
-		m_pCharacterControllerComponnet->SetVelocity(m_pEntity->GetWorldRotation() * velocity);
+		Vec3 velocity = ZERO;
+		float moveSpeed = IsInputFlagActive(EInputFlag::Walk) ? m_walkSpeed : m_movementSpeed;
+
+		if (IsInputFlagActive(EInputFlag::MoveForward))
+		{
+			velocity.y += moveSpeed * deltaTime;
+		}
+		if (IsInputFlagActive(EInputFlag::MoveBack))
+		{
+			velocity.y -= moveSpeed * deltaTime;
+		}
+		if (IsInputFlagActive(EInputFlag::MoveRight))
+		{
+			velocity.x += moveSpeed * deltaTime;
+		}
+		if (IsInputFlagActive(EInputFlag::MoveLeft))
+		{
+			velocity.x -= moveSpeed * deltaTime;
+		}
+
+		// TODO : fix sideways movespeed, inAir move speed
+				
+		m_pCharacterControllerComponnet->AddVelocity(m_pEntity->GetWorldRotation() * velocity);
 	}
 
 	void CPlayerComponent::UpdateCameraRotation()
